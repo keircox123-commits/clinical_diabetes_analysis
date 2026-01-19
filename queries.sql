@@ -128,9 +128,9 @@ SELECT
     insulin,
     COUNT(*) AS total_patients,
     ROUND(
-        SUM(CASE WHEN readmitted = 'YES' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2
+        SUM(CASE WHEN readmitted = '<30' THEN 1 ELSE 0 END)/ COUNT(*), 4
     ) AS readmission_rate
-FROM diabetes_data
+FROM diabetes
 GROUP BY insulin;
 
 --gender demographic output
@@ -142,6 +142,22 @@ SELECT
     ROUND(SUM(CASE WHEN readmitted = '<30' THEN 1 ELSE 0 END) * 100.0 / count(*), 2) AS readmission_rate
 FROM diabetes
 GROUP BY gender;
+
+
+-- using CTE for avg length of stay
+
+WITH age_group_stats AS (
+    SELECT 
+        age_mid_range,
+        ROUND(AVG(time_in_hospital)) AS avg_los,
+        COUNT(*) AS num_patients
+    FROM diabetes
+    GROUP BY age_mid_range
+)
+SELECT *
+FROM age_group_stats
+WHERE num_patients > 50
+ORDER BY avg_los DESC;
 
 
 
