@@ -94,6 +94,10 @@ WHEN age = '90-100' THEN 95 END;
 
 --Creating datasets
 
+-- demographic assessment
+SELECT age,gender,race,count(*) as 'patient number' from diabetes
+group by age,race,gender;
+
 --age readmission
 SELECT 
     age,
@@ -118,6 +122,26 @@ SELECT
     ) AS readmission_rate
 FROM diabetes
 GROUP BY medication_group;
+
+-- insulin output
+SELECT
+    insulin,
+    COUNT(*) AS total_patients,
+    ROUND(
+        SUM(CASE WHEN readmitted = 'YES' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2
+    ) AS readmission_rate
+FROM diabetes_data
+GROUP BY insulin;
+
+--gender demographic output
+SELECT 
+    gender,
+
+    COUNT(*) AS total_cases,
+    SUM(CASE WHEN readmitted = '<30' THEN 1 ELSE 0 END) AS 'readmitted <30',
+    ROUND(SUM(CASE WHEN readmitted = '<30' THEN 1 ELSE 0 END) * 100.0 / count(*), 2) AS readmission_rate
+FROM diabetes
+GROUP BY gender;
 
 
 
